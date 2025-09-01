@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>metamorphr</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">metamorphr</h1>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#the-whole-workflow" id="toc-the-whole-workflow">The whole
+workflow</a></li>
+<li><a href="#read-the-required-files" id="toc-read-the-required-files">Read the required files</a>
+<ul>
+<li><a href="#read-the-feature-table" id="toc-read-the-feature-table">Read the feature table</a></li>
+<li><a href="#read-the-sample-metadata" id="toc-read-the-sample-metadata">Read the sample metadata</a></li>
+<li><a href="#join-them-together" id="toc-join-them-together">Join them
+together</a></li>
+</ul></li>
+<li><a href="#filter" id="toc-filter">Filter</a></li>
+<li><a href="#imputate-missing-values" id="toc-imputate-missing-values">Imputate missing values</a></li>
+<li><a href="#normalize" id="toc-normalize">Normalize</a></li>
+<li><a href="#collapse-technical-replicates" id="toc-collapse-technical-replicates">Collapse technical
+replicates</a></li>
+<li><a href="#plot" id="toc-plot">Plot</a></li>
+<li><a href="#references" id="toc-references">References</a></li>
+</ul>
+</div>
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(metamorphr)</span></code></pre></div>
+<p>This vignette shows you how to work with metabolomics data using the
+metamorphr package. It is intended as a quick overview and the choices
+made (e.g., the algorithm for missing value imputation or normalization)
+may not be the best for the specific data set.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Metabolomics data preparation usually involves several steps: Feature
+tables are filtered to only contain ‘significant’ features, missing
+values are imputed, intensities are normalized, and, depending on the
+downstream analysis, data might also be scaled or transformed. The
+metamorphr package was developed to make these steps more streamlined
+and easier to perform. An example workflow is shown below. The goal of
+the workflow is to create a volcano plot that compares cells treated
+with the HMG-CoA reductase inhibitor mevastatin to cells treated with a
+vehicle control.</p>
+</div>
+<div id="the-whole-workflow" class="section level2">
+<h2>The whole workflow</h2>
+<p>For a quick reference, the workflow is shown as a whole below. The
+individual steps are explained in detail further down.</p>
+<p><em>The metamorphr package was developed to be used with a <a href="https://r4ds.hadley.nz/data-transform.html#sec-the-pipe">pipe
+operator</a> and this vignette makes extensive use of it. Make sure that
+you are familiar with the concept of the pipe before reading on. Also,
+this vignette uses the <a href="https://magrittr.tidyverse.org/reference/pipe.html">magrittr
+pipe</a> instead of the <a href="https://r4ds.hadley.nz/data-transform.html#sec-the-pipe">native
+pipe</a> to make it compatible with older versions of R. You should be
+able to use the native pipe as a drop-in replacement for the magrittr
+pipe, if you wish.</em></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>mevastatin_ft <span class="ot">&lt;-</span> <span class="fu">read_featuretable</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="st">&quot;https://raw.githubusercontent.com/yasche/metamorphr-data/main/RP18/pos/MetaboScape/mevastatin/mevastatin.csv&quot;</span>, </span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">label_col =</span> <span class="dv">3</span>, </span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>mevastatin_metadata <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="st">&quot;https://raw.githubusercontent.com/yasche/metamorphr-data/main/RP18/pos/MetaboScape/mevastatin/mevastatin_metadata.csv&quot;</span>, </span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>mevastatin_ft <span class="sc">%&gt;%</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">join_metadata</span>(mevastatin_metadata) <span class="sc">%&gt;%</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="fu">filter_grouped_mv</span>(<span class="at">min_found =</span> <span class="fl">0.75</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>                    <span class="at">group_column =</span> Group) <span class="sc">%&gt;%</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="fu">filter_blank</span>(<span class="at">blank_samples =</span> <span class="st">&quot;blank&quot;</span>, </span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>               <span class="at">blank_as_group =</span> T,</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>               <span class="at">group_column =</span> Group) <span class="sc">%&gt;%</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>  <span class="fu">filter_cv</span>(<span class="at">reference_samples =</span> <span class="st">&quot;QC&quot;</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>            <span class="at">ref_as_group =</span> T,</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>            <span class="at">group_column =</span> Group) <span class="sc">%&gt;%</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Group <span class="sc">!=</span> <span class="st">&quot;blank&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  <span class="fu">impute_knn</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>  <span class="fu">normalize_quantile_smooth</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  <span class="fu">collapse_mean</span>(<span class="at">sample_metadata_cols =</span> <span class="st">&quot;Group&quot;</span>,</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>                <span class="at">feature_metadata_cols =</span> <span class="st">&quot;Feature&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>  <span class="fu">plot_volcano</span>(<span class="at">group_column =</span> Group,</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>               <span class="at">name_column =</span> Feature, </span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>               <span class="at">groups_to_compare =</span> <span class="fu">c</span>(<span class="st">&quot;control&quot;</span>, <span class="st">&quot;mevastatin&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="sc">-</span><span class="fu">log10</span>(<span class="fl">0.05</span>),</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>                        <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>,</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>                        <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="sc">-</span> <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>                        <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>,</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>                        <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="read-the-required-files" class="section level2">
+<h2>Read the required files</h2>
+<p>This vignette uses data from a separate <a href="https://github.com/yasche/metamorphr-data">GitHub repository</a>.
+More information about the data can be found there.</p>
+<div id="read-the-feature-table" class="section level3">
+<h3>Read the feature table</h3>
+<p>The first step in the workflow is to read a feature table. The
+metamorphr package contains a convenience function,
+<code>read_featuretable</code>, that reads files containing delimiter
+separated values, for example files in the csv format, and performs
+several initial tidying steps to bring them in the correct format.
+<code>read_featuretable</code> can read files from disk but also literal
+data and data from the internet. We use the latter to download data from
+a <a href="https://github.com/yasche/metamorphr-data">GitHub
+repository</a>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>mevastatin_ft <span class="ot">&lt;-</span> <span class="fu">read_featuretable</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="st">&quot;https://raw.githubusercontent.com/yasche/metamorphr-data/main/RP18/pos/MetaboScape/mevastatin/mevastatin.csv&quot;</span>, </span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">label_col =</span> <span class="dv">3</span>, </span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>)</span></code></pre></div>
+<p>With the <code>label_col</code> argument, we specify that the values
+in column 3 in <a href="https://github.com/yasche/metamorphr-data/blob/main/RP18/pos/MetaboScape/mevastatin/mevastatin.csv">mevastatin.csv</a>
+are used as feature labels (in this case the exact mass). Those values
+are stored in a column named <code>Feature</code>. Further, with the
+<code>metadata_cols</code> argument we specify that columns 1 to 15
+contain feature metadata, for example retention time and collision cross
+section (CCS). Those are preserved but it is important to tell
+<code>read_featuretable</code> which columns contain metadata so the
+parsing and initial tidying work as expected.</p>
+<p>In addition to the <code>Feature</code> column and the preserved
+metadata columns, several other columns are created automatically by
+<code>read_featuretable</code>:</p>
+<ul>
+<li><p><code>UID</code>: a column containing a unique identifier for
+each feature</p></li>
+<li><p><code>Sample</code>: a column containing the sample
+names</p></li>
+<li><p><code>Intensity</code>: the measured intensity (or area) for a
+specific <code>Sample</code> <code>Feature</code> combination.</p></li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">head</span>(mevastatin_ft)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 18</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt;     UID Feature    Sample           Intensity FEATURE_ID    RT   CCS SIGMA_SCORE</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;                &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; 1     1 186.015    QC_1_07-Aug-24_…      745.          1  13.6  133.          NA</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; 2     2 837.83232  QC_1_07-Aug-24_…     1256.          2  24.5  152.          NA</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; 3     3 1403.71298 QC_1_07-Aug-24_…       NA           3  24.7  341.          NA</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; 4     4 769.84309  QC_1_07-Aug-24_…     3594.          4  24.8  222.          NA</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; 5     5 1539.68908 QC_1_07-Aug-24_…       NA           5  24.9  354.          NA</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; 6     6 218.07551  QC_1_07-Aug-24_…       NA           6  26.0  151.          NA</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; # ℹ 10 more variables: NAME_METABOSCAPE &lt;chr&gt;, MOLECULAR_FORMULA &lt;chr&gt;,</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; #   ADDUCT &lt;chr&gt;, KEGG &lt;chr&gt;, CAS &lt;chr&gt;, MaxIntensity &lt;dbl&gt;,</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; #   Condition_QC_MeanIntensity &lt;dbl&gt;, Condition_BLANK_MeanIntensity &lt;dbl&gt;,</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; #   Condition_Control_MeanIntensity &lt;dbl&gt;,</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; #   Condition_Treatment_MeanIntensity &lt;dbl&gt;</span></span></code></pre></div>
+</div>
+<div id="read-the-sample-metadata" class="section level3">
+<h3>Read the sample metadata</h3>
+<p>Sample metadata, for example group information or replicate number,
+is required for some of the functions. An empty metadata table with
+required columns and rows can be created from an existing feature table
+via <code>create_metadata_skeleton</code> and exported and edited by
+hand, for example in Microsoft Excel. After editing, the file can be
+read back into R using <code>readr::read_csv</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>mevastatin_ft <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">create_metadata_skeleton</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  readr<span class="sc">::</span><span class="fu">write_csv</span>(<span class="at">file =</span> <span class="st">&quot;some/path/menadione_metadata.csv&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>mevastatin_metadata <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">&quot;some/path/menadione_metadata.csv&quot;</span>)</span></code></pre></div>
+<p>In this case, there is already a file containing the relevant
+metadata in the GitHub repository.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>mevastatin_metadata <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="st">&quot;https://raw.githubusercontent.com/yasche/metamorphr-data/main/RP18/pos/MetaboScape/mevastatin/mevastatin_metadata.csv&quot;</span>, </span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">head</span>(mevastatin_metadata)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 5</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt;   Sample                    Group      Replicate Batch Factor</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                     &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; 1 B9_Comp_1_08-Aug-24_10235 mevastatin         1     1      1</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; 2 B9_Comp_1_10-Aug-24_10378 mevastatin         1     1      1</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; 3 B9_Comp_1_11-Aug-24_10517 mevastatin         1     1      1</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; 4 B9_Comp_2_08-Aug-24_10236 mevastatin         2     1      1</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; 5 B9_Comp_2_10-Aug-24_10379 mevastatin         2     1      1</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; 6 B9_Comp_2_12-Aug-24_10522 mevastatin         2     1      1</span></span></code></pre></div>
+<p>The metadata table must include the following columns:</p>
+<ul>
+<li><p><code>Sample</code>: Contains the sample names.</p></li>
+<li><p><code>Group</code>: Contains group information.</p></li>
+<li><p><code>Replicate</code>: Replicate information. If multiple
+replicates of the same sample exist (e.g., the same sample was injected
+multiple times) they must have the same replicate number.</p></li>
+<li><p><code>Batch</code>: Samples belonging to the same batch must have
+the same batch number.</p></li>
+<li><p><code>Factor</code>: A sample specific factor, for example
+protein concentration or dry weight. Only necessary for specific
+normalization strategies.</p></li>
+</ul>
+</div>
+<div id="join-them-together" class="section level3">
+<h3>Join them together</h3>
+<p>metamorphr provides a convenience function,
+<code>join_metadata</code>, for joining together a feature table and
+associated metadata.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>mevastatin_ft <span class="ot">&lt;-</span> <span class="fu">join_metadata</span>(mevastatin_ft, mevastatin_metadata)</span></code></pre></div>
+</div>
+</div>
+<div id="filter" class="section level2">
+<h2>Filter</h2>
+<p>In this workflow, filter functions are used to improve the overall
+data quality. In the R console, you can type
+<code>metamorphr::filter_</code> to see all available filter functions.
+<code>dplyr::filter</code> is used to remove blank samples
+afterwards.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>mevastatin_ft <span class="ot">&lt;-</span> mevastatin_ft <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">filter_grouped_mv</span>(<span class="at">min_found =</span> <span class="fl">0.75</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>                    <span class="at">group_column =</span> Group) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="fu">filter_blank</span>(<span class="at">blank_samples =</span> <span class="st">&quot;blank&quot;</span>, </span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>               <span class="at">blank_as_group =</span> T,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>               <span class="at">group_column =</span> Group) <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="fu">filter_cv</span>(<span class="at">reference_samples =</span> <span class="st">&quot;QC&quot;</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>            <span class="at">ref_as_group =</span> T,</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>            <span class="at">group_column =</span> Group) <span class="sc">%&gt;%</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Group <span class="sc">!=</span> <span class="st">&quot;blank&quot;</span>)</span></code></pre></div>
+<p>In this workflow, 3 filter functions are used sequentially:</p>
+<ul>
+<li><p><code>filter_grouped_mv</code>: To only keep features with a low
+rate of missing values. With default parameters, only features are kept
+if they were found in at least 75 % of the samples of at least 1
+group.</p></li>
+<li><p><code>filter_blank</code>: To remove features that were found
+with a high intensity in blank samples. With default parameters, only
+features are kept were the maximum intensity in non-blank samples is at
+least 3 times as high as in blank samples.</p></li>
+<li><p><code>filter_cv</code>: To remove features with a poor
+reproducibility (i.e., with a high coefficient of variation, CV) in
+quality control samples. With the default parameters, only features with
+a maximum CV of 0.2 are kept.</p></li>
+</ul>
+</div>
+<div id="imputate-missing-values" class="section level2">
+<h2>Imputate missing values</h2>
+<p>The data contains missing values (i.e., <code>NA</code>). Those
+should be imputed prior to creating a volcano plot. For this example,
+the <a href="https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm"><em>k</em>-nearest
+neighbors algorithm</a> is used for imputation but the metamorphr
+package provides other options as well. Start typing
+<code>metamorphr::impute_</code> in the R console to see the available
+options.</p>
+<p>The underlying design of the metamorphr package makes it very easy to
+visualize the data using ‘ggplot2’. Below, a simple visualization is
+used to verify that the imputation worked as expected.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>mevastatin_ft_before_impute <span class="ot">&lt;-</span> mevastatin_ft <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">State =</span> <span class="st">&quot;Before imputation&quot;</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>  </span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>mevastatin_ft <span class="ot">&lt;-</span> <span class="fu">impute_knn</span>(mevastatin_ft)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>mevastatin_ft <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">State =</span> <span class="st">&quot;After imputation&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(mevastatin_ft_before_impute) <span class="sc">%&gt;%</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">State =</span> <span class="fu">factor</span>(State, </span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>                               <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Before imputation&quot;</span>, </span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>                                          <span class="st">&quot;After imputation&quot;</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(State, Sample, Group) <span class="sc">%&gt;%</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">count</span>(<span class="at">wt =</span> <span class="fu">is.na</span>(Intensity)) <span class="sc">%&gt;%</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(Sample, n, <span class="at">color =</span> Group)) <span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span>State, <span class="at">nrow =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">&quot;Number of missing values&quot;</span>) <span class="sc">+</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> ggplot2<span class="sc">::</span><span class="fu">element_blank</span>(),</span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>                   <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>As expected, there are no missing values after imputation.</p>
+</div>
+<div id="normalize" class="section level2">
+<h2>Normalize</h2>
+<p>Next, intensities are normalized across samples. In this example, a
+smooth quantile normalization is used (Hicks et al., 2018). This
+algorithm requires sample metadata, more specifically, grouping
+information. Other available options can be viewed by typing
+<code>metamorphr::normalize_</code> into the R console.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>mevastatin_ft_before_norm <span class="ot">&lt;-</span> mevastatin_ft <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">State =</span> <span class="st">&quot;Before normalization&quot;</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>mevastatin_ft <span class="ot">&lt;-</span> <span class="fu">normalize_quantile_smooth</span>(mevastatin_ft)</span></code></pre></div>
+<p>Again, we can use a ‘ggplot2’ visualization as verification.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>mevastatin_ft <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">State =</span> <span class="st">&quot;After normalization&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(mevastatin_ft_before_norm) <span class="sc">%&gt;%</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">State =</span> <span class="fu">factor</span>(State, </span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>                               <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;Before normalization&quot;</span>, </span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a>                                          <span class="st">&quot;After normalization&quot;</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(Sample, <span class="fu">log10</span>(Intensity), <span class="at">color =</span> Group)) <span class="sc">+</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span>State, <span class="at">nrow =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">&quot;log10(Intensity)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.text.x =</span> ggplot2<span class="sc">::</span><span class="fu">element_blank</span>(),</span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a>                   <span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAABX1BMVEUAAAAAADoAAGYAOmYAOpAAZrYAujgZGT8ZGWIZP2IZP4EZYp8aGhozMzM6AAA6ADo6AGY6OmY6OpA6kNs/GRk/GT8/GWI/P2I/P4E/YmI/gb1NTU1NTW5NTY5NbqtNjshhnP9iGRliGT9iGWJiPxliP4FiYmJin9lmAABmADpmAGZmOgBmtrZmtv9uTU1uTW5uTY5ubo5ubqtuq+SBPxmBPz+BP2KBYhmBgWKBn4GBvZ+BvdmOTU2OTW6OTY6Obk2ObquOyP+QOgCQOjqQZgCQkDqQkGaQtpCQ27aQ2/+fYhmfvYGf2Z+f2b2f2dmrbk2rbm6rbo6rjk2r5OSr5P+2ZgC2tma225C2//+9gT+92dnIjk3I///Zn2LZvYHZ2Z/Z2b3Z2dnbkDrb/7bb/9vb///kq27k///r6+v4dm3/tmb/tpD/yI7/25D/29v/5Kv//7b//8j//9v//+T///+74i8rAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAOt0lEQVR4nO2diX8bRxXHFROL0ChOiFMIMYcSCnZTHI46XAmUGmixgaZATJ3QOJZKgmRqojj7/3+YN8fu3G9W0h6y3u/j8e7OHtr5+s2bndF4XycjRdVp+gbaLgKEiAAhIkCICBAiAoQoFdCVpVNZQIMlEwFCRIAQESBEBAgRAUJEgBARIER1Azq60WPaVJvHO71bU1/qG5+wn3jO7KodEBTg6O0H+uYsl0JyZlcjgI7vPxg8v9279An79dUHfG1w9M13+PYlXsajm7/gdlbs++v9X/Z6t571wOLADDelvewzg7wscuDgP7Pry5PkJRYR0NHNp4P9W4Mnl/kmW3v21tOjG6wwIhMOu8EztX3HO4CBn/H8zgNJR+E2c9RJ4hKLBoj7oLeeQpGefx/Kw34P2BaUTGZKjuY+sDpueXd49RTnckBPhBfLc7ST5lDnmqliO1Adeqx6yUKykh+JugGZgxyQts8AxOrVJQUIzNHI0U5aVECD/U1hKJaVyMwBYkHPb28WFQryBkbOObAgsALpKAqXATv2ldtQpSv2aYD4zrel9fEKZuRoJy0iIPUcxBuwwVHR6HByt0UNywEV+/Qq9qTX+9o7mxzHX6BW9m6JnOMdvRVbTEALJwKEiAAhIkCICBCi0oCWTmUBZSP2e4bU7OnlL9FGQOPxOLgdORyWegpc3ne4finr1LoBdbtdJ8EutT4upG5X37YhjONyoMUP9Z1aOSCLAiKkwA1oKkD9fj9TSz35LaaMmsbhqjSgflwjK9ULaKSlEofbeVUCsuWBYPsgI38ccKHjoA/y+nWf01Yp0AzoeeMZfFBJQH2bQsBNVdNGz+ESCYDePNr49uMQIN0HeWVTCPjvRQb0rw+zL7/7Hw1Q7qDt61nAnGM0CwpVO6z+aHXAV40itVOtY4dZn4oDev3bz7WtKz4AlgUZYDQzUTCycOMWc6mZsahLOKBXP/u7rGK8a1LC/dTfilWgBED3PmSQ9CpWRssAiMF5/ZvH9QACQjXXIUv2pyf4oN/VCKgRJlGltWJUxWKAXj/c+E7ekBEgRAQoAVDwqZkAwXAHewbM/Ix8mcsA6OXGRuGEFCAbRqbl58s0QOxpW3bVus228F6ltWKuBekQMj3PSkEqBRQ9TVOELP3JKfFAfXQWB/Tm08chQCkpYjW+NNa7jGPPoE7mFNLKC67DcVl4iFpxloepT094UHzIqhg3It4XG/VHo1Kpy366XZ5G+SKcxvGkFuOxsRzJkUB7v70+GrtXlCOLvkNZSuhq/PixZkWlLcg2kYDl5GkcT7Fd4/j+hEt4UmIrlvuhFgNKTQSoZkAwmvjmb04zT4BysecgbUyaAMU1VSump1gLlt6KzZLKHT5tV2NWC1IPi8YuyFt4CzI7XwWIUNcjBMj3CMmfpasEZD8IzgvQm0d5b+MKZ6GShKSQ9M1dqrNqA1IwPCmtK+AX54cd4x6hn+a5RBKglxsBQIpEvt23d4csJQQIbnDaJIo43WnBS6QAevXTDyKAjOQHlJ5mAsTTjKc7l0j56vnTfzwq+mJ+y3GHgjBAfi0koJfvGz4oQCIgb5UKK83ZzOSqSl466XsxLyAbSthJhwY85uykq5EX0LDDtS4MaAP0ftAHBQBV6KRBFVUxfmmkik22JBnG6cKe8EK+Zt72QSWdtA9YSR/kBTUdWyM/Dmhy97AwJbnhAHKef/xOGqqYDkRbt5+gZV4Z40957rFPyfyjrvmlpvFBprgP0vtaCojVB+NZbKkKL0cTxXpr+2JApCV9sYXuzU+2pO8hQKG+2EGnc/EFAQoD4m2Zasy+3NAnLxAgHdEKa8Re/eTz7OX32gxohJw2wi9RHhB7VlxlVU1WNIBUEyB7Ii4CKHCYsW9k5mGXMNe9gM52O51tWDlZEQ9FwoLcLw5HCUOuI/+Qq5Vt5Ick2+gK5V7e34qtHOq8Xt3zDdor8JgFjfwWZGXn28jUbtsyGplIPtkyzIdJm6OYQ7EBhWDJknfVNA4PiAQwCaXjD8INAdK/OLQBYcBEvuhLjEr/60F66URXoQZAsivf4V46E18cxizI2u57/v2gAKQ4ObeSCq4FgHILUrK+ONTOz2EUgERHtThGs5wYoKJfvwiAYrqiOfi8n2rnyRVYyJ6qWqrNkdynrXaNfdO0QOMqmjh3uGNrGx4RQWZb5lpQMbRRWJTaVsuIBTnroeo3/Z+/CQuKACqGgrSqpuqNWJ5LQK/ubWjfi+nn+wB51rUUApQtFiBRzWQNgxYMZpl5AElIhkV58rUmyoaiX2qBAB2sZsOVw6Fs5qGbYT0HBZLdxLsljzXziwOIGdDZ7qr7JC36YuWlN0+BhmoerVg1CgCabK1rgN48Ut/6RKtYKN8wDbdq5YcsjAWd7a6fXNiDiibt52HOxwEUcMZmvk7E72vm8KBYI6DsdI11M9RYEP+fzNkAmbcXBDT/0lUFyJDBhwC5El89B1uxgA+KAAr6oMUBxKpYsKuhe3hfZ0zfVaKxaGMDxuV30qsuGY8FOX2xBMuq989fkQVZwx3TAaqohK0AdLZbDlCdJWwFIGOwNQIoWI3OO6DU8aAmStgKQDE18KbHhlUS0NLKBDTsdLaHgfkdSypzPOjiF2LEg5TLGe7YjrVlSygChMioYkOoYjBmRsplOumTYh65paYb3frlBRQWvZE8887uIEAEKCB8+gsBClmQVwQIEQECxcakm77hulV6TLrpG65bTfkgHmjueKf3rWkCXNUTQFSo9Jj0nD732Q9vTV+segKICpUek57Pxx7f//UPnvKQhj0VPJTHEW1TAFGh0mPS8/nYo5tP91VBVUTRG7xM7QkgKtRQM/+EFeGyLFkRURT2tCeAqFAzgJh3LsJ+FhFFYVd7AogKNQOIF21/s/i7D3I/254AokKeedJ5X6w6H/QE3M2zy07Yz0GbAogKNWJBxz+Hu39+51fMDHZkSGzLgloQQFSI+mKIkt68QICsd3fIB+n83R0EyP7iUH/7CwFyAUVEgAiQKQ8gNSjt7dI3/S1V/XIAHcjnw8mWd9B+6SdQFaNl/q99yt5O14nXZ2cZib/tKJyQ3Smp5OGlAfU9QdYiqVtOye+Sqk2eKiYnTgWqWL+cziEgMXMh6KQJUFzTRsk8Pz4oAVAZH3T+WjFXZhjRpW/mXZlhRCu+vfZXMWdEEQkjiqVyPqisC61evq6G9XqlqcOInttW7MCYQk5hRB1ApmoNI9o0DlcURhQRhRFFFPtuXs5SpDCijgXxdmyyte6ZSUWAMn0asDviQYAIkKloFcv4P9WZYUT7Sz9gxo1HjAcN+ReH4TCiKal7/roalmYMI1rybcDj1ndWHc0hjOj5C8A21L55XpgwojW+kTx30rkoSiby71AEKAyIwog6gKwqRmFEHUCGkzZFrRgisiAChADyzZOOhvBbxs6qrWgYUSMtZZRMCiOKAAqEESVAeQWLhxFdeh8UCiNKgJQBIWFEqYpFooUTIA8gqmJR0ZM0Bog6qwggsiACVBYQhRGNA2p/GNGmLSirNYzoYgIKhRGlVkzYjzeMaEUWtIATyTM3jCjNtLeVFj5rOQH5wogSIF3hMKIEyNU0AdgWWrNEySQLIkAzhhElQCAkjCgBKhFGdDkBgWYLI7rQShy0D4cRJQuKhxElQEgYUQKEhBElQFgYUQJkiloxDBBZEAEiQASIALUY0NKpJKCMI50hNXv6NJcgQHMGtKQiQIgIECIChIgAISJAiNoDCP5f1g02YOn0KnbEvNUaQPw/rk/8b9ottLyAZPC3AyTY/TIDyv8bnYeiXGcsPmYr67C1zTY+6nQYPAB0tusPP1SN2gIIXl0kEPH3P7AKd7rGgAyBCt9YOYQ3qzFA/AVrQ8TS5qfWABJempX9f1B0BuJ0bRusaVvbYMureyfi9RCIs5qbWgQog3KDZZzw9oy7G/WLLxkVthyGw8dUoXYBAhaTLdbYKyY+QLXVLq62AJLNE1QhbkS2BfEqdu0Q9qMPS3NVWwBlB1BucMAA4HTNAaQ5aUawPkqtAVS8eeaAeaA/8dqkV7GPuAdXzXx9VtQeQFHV/4CoRIAQESBECwKoOREgRAQIEQFCRIAQESBEBAgRAUJEgBARIEQECBEBQkSAEBEgRAQIEQFCRIAQESBEBAgRAUJEgBARIEQECFElgMZTnted3y3053UhAoSIACEiQIjmCsh9r3fSaZ43lE97B+6r0ae9klIc0FBEzUyVwyMRUEJOohwelQI62xWz35PnS0YBDRVrmKNpzDMsC+j02mFoa2ZAxdVgwh/biAGSoerSZ03GAMEcejUF2ppR31pAsIgA0ie/X/tjByYJ5tPg8mlxBrwIIPFxJxdfTN7dy/L/PBCKAppswXw79ptxPb3+B2aFsP7Z199bOZSZqYDOfs/ud11MWOennl5/wTL3xFx+MGx5SZ7BP4UZUQSQNln7dG1VzLCUEymNiZUaj7CTPuHHMTonrj3GnDSQZKccrMPv0zWxYPcNs14P1JbGI+Kk+b2zgsAJ7NThKoPDmH/B/mIsa3L3kGXxNZEhfyKABIg1Pqkb7ofXOPbLnJqrT/2KWNCQA2K3dOJEao9akCg+3D27b9jIb13PLADZVzIsaI8ndg4wYKcPGSZeS9i6sGxljywDB6QsSM3j5n97bYa3mtzt4+Fk5BYEdh3E4eaIw+G2oTIYgLRMHw8nQwe0JSbzX/8324ZptVBV16Au86vxDByQ8kFzAQQf/F+gU9IHVWRBdw9FzsfshlgJ5DVEhZUZOCDR3miAYHKyU8X024u1YqwtZH+30q0YkGSfUbibApDXB6UBkqeyR491XgI5wV/6N5GRACg7EM9B7LSre4WThkCsZ7sXfE46Agieg1b+CS1IuecgoxUTgNjz2WfXDrOsdCtWABJXFR6U3dhX3tuWFQ2e/USG+JQ4IBV/Xrpi2cxzx/2jd/PZ7xqPpetqRBWeu0ydVS4ChIgAkTIChIoAISJAiAgQIgKEiAAhIkCICBAiAoSIACEiQIgIECIChIgAISJAiAgQov8D3Kf7EZKRUqsAAAAASUVORK5CYII=" /><!-- --></p>
+<p>The normalization worked as expected. The distributions of
+intensities inside each group are identical.</p>
+</div>
+<div id="collapse-technical-replicates" class="section level2">
+<h2>Collapse technical replicates</h2>
+<p>In the example data set, the same sample was injected 3 times. Prior
+to doing statistics and drawing the volcano plot, those technical
+replicates should be collapsed. The metamorphr package provides several
+approaches to do this. Start typing <code>metamorphr::collapse_</code>
+into the R console to see the available options. For this workflow, we
+will simply calculate the mean of the technical replicates using
+<code>collapse_mean</code>. It is important that sample metadata are
+provided for this approach.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>mevastatin_metadata</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 73 × 5</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt;    Sample                    Group      Replicate Batch Factor</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;                     &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt;  1 B9_Comp_1_08-Aug-24_10235 mevastatin         1     1      1</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt;  2 B9_Comp_1_10-Aug-24_10378 mevastatin         1     1      1</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt;  3 B9_Comp_1_11-Aug-24_10517 mevastatin         1     1      1</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt;  4 B9_Comp_2_08-Aug-24_10236 mevastatin         2     1      1</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt;  5 B9_Comp_2_10-Aug-24_10379 mevastatin         2     1      1</span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt;  6 B9_Comp_2_12-Aug-24_10522 mevastatin         2     1      1</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt;  7 B9_Comp_3_08-Aug-24_10237 mevastatin         3     1      1</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt;  8 B9_Comp_3_10-Aug-24_10380 mevastatin         3     1      1</span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt;  9 B9_Comp_3_12-Aug-24_10523 mevastatin         3     1      1</span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt; 10 B9_Comp_4_08-Aug-24_10238 mevastatin         4     1      1</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; # ℹ 63 more rows</span></span></code></pre></div>
+<p>It is important that <code>Group</code> and <code>Replicate</code>
+information is provided as well as <code>Batch</code>. Technical
+replicates of the same sample must have the same value for
+<code>Group</code>, <code>Batch</code> and <code>Replicate</code>. For
+example, <code>B9_Comp_1...</code> belongs to group
+<code>mevastatin</code> and was injected 3 times as indicated by the
+three samples with replicate number 1.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>mevastatin_ft <span class="ot">&lt;-</span> <span class="fu">collapse_mean</span>(mevastatin_ft,</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>                               <span class="at">sample_metadata_cols =</span> <span class="st">&quot;Group&quot;</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>                               <span class="at">feature_metadata_cols =</span> <span class="st">&quot;Feature&quot;</span>)</span></code></pre></div>
+</div>
+<div id="plot" class="section level2">
+<h2>Plot</h2>
+<p>Finally, data can be plotted with <code>plot_volcano</code>. The
+resulting plot can be easily modified with ‘ggplot2’ functions.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">plot_volcano</span>(mevastatin_ft,</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>             <span class="at">group_column =</span> Group,</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>             <span class="at">name_column =</span> Feature, </span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>             <span class="at">groups_to_compare =</span> <span class="fu">c</span>(<span class="st">&quot;control&quot;</span>, <span class="st">&quot;mevastatin&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="sc">-</span><span class="fu">log10</span>(<span class="fl">0.05</span>),</span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>                      <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>                      <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="sc">-</span> <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>                      <span class="at">color =</span> <span class="st">&quot;grey40&quot;</span>,</span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a>                      <span class="at">linetype =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Hicks, S. C., Okrah, K., Paulson, J. N., Quackenbush, J., Irizarry,
+R. A., &amp; Bravo, H. C. (2018). Smooth quantile normalization.
+<em>Biostatistics, 19</em>(2), 185–198. DOI
+10.1093/biostatistics/kxx028</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

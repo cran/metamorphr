@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Conjugate Screening</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Conjugate Screening</h1>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#prepare-the-data-set" id="toc-prepare-the-data-set">Prepare the data set</a></li>
+<li><a href="#find-potential-glutathion-conjugates" id="toc-find-potential-glutathion-conjugates">Find potential glutathion
+conjugates</a>
+<ul>
+<li><a href="#some-initial-filtering" id="toc-some-initial-filtering">Some initial filtering</a></li>
+<li><a href="#characteristic-msms-fragments" id="toc-characteristic-msms-fragments">Characteristic MS/MS
+fragments</a></li>
+<li><a href="#characteristic-neutral-losses" id="toc-characteristic-neutral-losses">Characteristic neutral
+losses</a></li>
+</ul></li>
+<li><a href="#references" id="toc-references">References</a></li>
+</ul>
+</div>
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(metamorphr)</span></code></pre></div>
+<p>This vignette explains how to use the metamorphr package to search a
+featuretable for characteristic MS/MS fragments and neutral losses.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Glutathion (GSH) conjugates of xenobiotics usually result in
+characteristic MS/MS fragments and neutral losses (Brink et al., 2014).
+This vignette shows you two approaches, one relying on MS/MS fragments
+and one relying on neutral losses, to screen a metabolomics data set
+with associated MS/MS spectra for GSH conjugates. If you want to learn
+more about drug metabolism you can visit the Wikipedia page (<a href="https://en.wikipedia.org/wiki/Drug_metabolism" class="uri">https://en.wikipedia.org/wiki/Drug_metabolism</a>). The data
+set was obtained by treating HepG2 cells with the redox cycler menadione
+and measuring the samples in ESI positive mode.</p>
+</div>
+<div id="prepare-the-data-set" class="section level2">
+<h2>Prepare the data set</h2>
+<p>This vignette uses data from a separate <a href="https://github.com/yasche/metamorphr-data">GitHub repository</a>.
+More information about the data can be found there.</p>
+<p>First, the featuretable, the sample metadata, and the MS/MS spectra
+have to be imported and joined together. The metamorphr package provides
+several convenience functions to help with these tasks. To read the
+sample metadata in the form of a .csv file, <code>readr::read_csv</code>
+can be used.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>menadione_ft <span class="ot">&lt;-</span> <span class="fu">read_featuretable</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="st">&quot;https://github.com/yasche/metamorphr-data/raw/refs/heads/main/RP18/pos/MetaboScape/menadione/menadione.csv&quot;</span>, </span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">label_col =</span> <span class="dv">3</span>, </span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">metadata_cols =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>menadione_metadata <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="st">&quot;https://github.com/yasche/metamorphr-data/raw/refs/heads/main/RP18/pos/MetaboScape/menadione/menadione_metadata.csv&quot;</span>, </span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>menadione_msn <span class="ot">&lt;-</span> <span class="fu">read_mgf</span>(<span class="st">&quot;https://github.com/yasche/metamorphr-data/raw/refs/heads/main/RP18/pos/MetaboScape/menadione/menadione.gnps.mgf&quot;</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>                          <span class="at">show_progress =</span> F)</span></code></pre></div>
+<p>After the files have been imported successfully, they can be joined
+together. First the sample metadata is joined using the convenience
+function <code>join_metadata</code>. The MS/MS spectra can simply be
+added via <code>dplyr::left_join</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>menadione_ft <span class="ot">&lt;-</span> menadione_ft <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">join_metadata</span>(menadione_metadata) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(menadione_msn, <span class="at">by =</span> <span class="st">&quot;FEATURE_ID&quot;</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">head</span>(menadione_ft)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 30</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;     UID Feature    Sample           Intensity FEATURE_ID    RT   CCS SIGMA_SCORE</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt;   &lt;int&gt; &lt;chr&gt;      &lt;chr&gt;                &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; 1     1 186.015    QC_1_07-Aug-24_…      745.          1  13.6  133.        NA  </span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 2     2 837.83232  QC_1_07-Aug-24_…     1256.          2  24.2  152.        NA  </span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; 3     3 769.84306  QC_1_07-Aug-24_…     3594.          3  24.6  223.        NA  </span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; 4     4 1403.71268 QC_1_07-Aug-24_…       NA           4  24.7  341.        NA  </span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; 5     5 1539.68908 QC_1_07-Aug-24_…       NA           5  25    354.        NA  </span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; 6     6 244.22612  QC_1_07-Aug-24_…    25572.          6  25.9  157.        12.9</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; # ℹ 22 more variables: NAME_METABOSCAPE &lt;chr&gt;, MOLECULAR_FORMULA &lt;chr&gt;,</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; #   ADDUCT &lt;chr&gt;, KEGG &lt;chr&gt;, CAS &lt;chr&gt;, MaxIntensity &lt;dbl&gt;,</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; #   Condition_QC_MeanIntensity &lt;dbl&gt;, Condition_BLANK_MeanIntensity &lt;dbl&gt;,</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; #   Condition_Control_MeanIntensity &lt;dbl&gt;,</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; #   Condition_Treatment_MeanIntensity &lt;dbl&gt;, Group &lt;chr&gt;, Replicate &lt;dbl&gt;,</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; #   Batch &lt;dbl&gt;, Factor &lt;dbl&gt;, SCANS &lt;dbl&gt;, PEPMASS &lt;dbl&gt;, MSLEVEL &lt;dbl&gt;,</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; #   CHARGE &lt;chr&gt;, POLARITY &lt;chr&gt;, RTINMINUTES &lt;dbl&gt;, ION &lt;chr&gt;, MSn &lt;list&gt;</span></span></code></pre></div>
+</div>
+<div id="find-potential-glutathion-conjugates" class="section level2">
+<h2>Find potential glutathion conjugates</h2>
+<p>To find potential GSH conjugates, two approaches can be used: (i)
+search for specific MS/MS spectra and (ii) search for specific neutral
+losses. Functions for both approaches are implemented in the metamorphr
+package and are shown below. Results can be easily visualized using the
+‘ggplot2’ package. Characteristic fragments and neutral losses are
+described in Brink et al., 2014.</p>
+<div id="some-initial-filtering" class="section level3">
+<h3>Some initial filtering</h3>
+<p>To reduce the search space and remove potential false-positives, some
+initial filtering can be done using one or more of the several filter
+functions provided by the metamorphr package. First, QC samples are
+removed using <code>dplyr::filter</code> as they are not needed for
+further analysis. In this scenario, we are only interested in features
+that are solely present in the treated samples, so
+<code>filter_blank</code> can be used prior to searching for specific
+fragments or neutral losses. Additionally, we are only interested in
+features that are found reproducibly across samples, so we also use
+<code>filter_grouped_mv</code>. Finally, blank samples are removed,
+again using <code>dplyr::filter</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>menadione_ft <span class="ot">&lt;-</span> menadione_ft <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Group <span class="sc">!=</span> <span class="st">&quot;QC&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">filter_grouped_mv</span>(<span class="at">min_found =</span> <span class="fl">0.75</span>)  <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">filter_blank</span>(<span class="at">blank_samples =</span> <span class="fu">c</span>(<span class="st">&quot;blank&quot;</span>, <span class="st">&quot;control&quot;</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>               <span class="at">blank_as_group =</span> T,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>               <span class="at">group_column =</span> Group,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>               <span class="at">min_frac =</span> <span class="dv">3</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(Group <span class="sc">!=</span> <span class="st">&quot;blank&quot;</span>)</span></code></pre></div>
+</div>
+<div id="characteristic-msms-fragments" class="section level3">
+<h3>Characteristic MS/MS fragments</h3>
+<p>Searching for characteristic MS/MS fragments can be done using the
+<code>filter_msn</code> function.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>fragments <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">308.0911</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>               <span class="fl">179.0485</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>               <span class="fl">177.0328</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>               <span class="fl">162.0219</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>               <span class="fl">130.0499</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>menadione_ft <span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="fu">filter_msn</span>(<span class="at">fragments =</span> fragments, </span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>             <span class="at">min_found =</span> <span class="dv">2</span>, </span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>             <span class="at">tolerance =</span> <span class="dv">5</span>, </span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>             <span class="at">tolerance_type =</span> <span class="st">&quot;ppm&quot;</span>, </span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>             <span class="at">show_progress =</span> F) <span class="sc">%&gt;%</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(Group, Intensity)) <span class="sc">+</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_point</span>(<span class="at">position =</span> <span class="st">&quot;jitter&quot;</span>) <span class="sc">+</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span> Feature) <span class="sc">+</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ylim</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>))</span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; Warning: Removed 12 rows containing missing values or values outside the scale range</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>Searching for characteristic MS/MS fragments yields only one
+potential GSH conjugate: A feature with an exact mass of 511.12575
+Da.</p>
+</div>
+<div id="characteristic-neutral-losses" class="section level3">
+<h3>Characteristic neutral losses</h3>
+<p>Prior the searching for specific neutral losses via the
+<code>filter_neutral_loss</code> function, neutral loss spectra must be
+calculated using <code>calc_neutral_loss</code>. The usage of both
+functions is shown below.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>losses <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">75.0320</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>            <span class="fl">129.0426</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>            <span class="fl">232.0696</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>            <span class="fl">146.0692</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>            <span class="fl">249.0961</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>            <span class="fl">273.0961</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>            <span class="fl">275.1117</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>            <span class="fl">305.0682</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>            <span class="fl">307.0838</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>menadione_ft <span class="sc">%&gt;%</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="fu">calc_neutral_loss</span>(<span class="at">m_z_col =</span> PEPMASS) <span class="sc">%&gt;%</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>  <span class="fu">filter_neutral_loss</span>(<span class="at">losses =</span> losses, </span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>                      <span class="at">min_found =</span> <span class="dv">4</span>, </span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>                      <span class="at">tolerance =</span> <span class="dv">10</span>, </span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>                      <span class="at">tolerance_type =</span> <span class="st">&quot;ppm&quot;</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>                      <span class="at">show_progress =</span> F) <span class="sc">%&gt;%</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(Group, Intensity)) <span class="sc">+</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">geom_point</span>(<span class="at">position =</span> <span class="st">&quot;jitter&quot;</span>) <span class="sc">+</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">facet_wrap</span>(<span class="sc">~</span> Feature) <span class="sc">+</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">ylim</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="cn">NA</span>))</span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; Warning: Removed 24 rows containing missing values or values outside the scale range</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; (`geom_point()`).</span></span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+<p>This approach yields two potential GSH conjugates: One with an exact
+mass of 477.12018 and the one with an exact mass of 511.12575 which was
+also found using the MS/MS fragments-based approach above.</p>
+<p>Interestingly, menadione has been reported to form a GSH conjugate,
+thiodione, with a calculated exact mass of 477.12058 Da (Mauzeroll et
+al., 2004). The difference between the measured exact mass of one
+potential conjugate and the calculated mass is just 0.0004 Da or 0.86
+ppm.</p>
+</div>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Brink, A., Fontaine, F., Marschmann, M., Steinhuber, B., Cece, E. N.,
+Zamora, I., &amp; Pähler, A. (2014). Post-acquisition analysis of
+untargeted accurate mass quadrupole time-of-flight MS E data for
+multiple collision-induced neutral losses and fragment ions of
+glutathione conjugates: Neutral losses and fragment ion analysis of
+glutathione conjugates. <em>Rapid Communications in Mass Spectrometry,
+28</em>(24), 2695–2703. DOI 10.1002/rcm.7062</p>
+<p>Mauzeroll, J., Bard, A. J., Owhadian, O., &amp; Monks, T. J. (2004).
+Menadione metabolism to thiodione in hepatoblastoma by scanning
+electrochemical microscopy. <em>Proceedings of the National Academy of
+Sciences, 101</em>(51), 17582–17587. DOI 10.1073/pnas.0407613101</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
