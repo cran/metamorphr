@@ -80,7 +80,7 @@ losses <- c(75.0320,
             307.0838)
 
 menadione_ft %>%
-  calc_neutral_loss(m_z_col = PEPMASS) %>%
+  msn_calc_nl(m_z_col = PEPMASS) %>%
   filter_neutral_loss(losses = losses, 
                       min_found = 4, 
                       tolerance = 10, 

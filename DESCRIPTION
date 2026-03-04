@@ -1,6 +1,6 @@
 Package: metamorphr
 Title: Tidy and Streamlined Metabolomics Data Workflows
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person("Yannik", "Schermer", , "yannik.schermer@chem.rptu.de", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0009-0002-5201-057X"))
@@ -8,21 +8,21 @@ Description: Facilitate tasks typically encountered during metabolomics data ana
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
-Imports: broom, crayon, dplyr, ggplot2, impute, magrittr, missForest,
-        pcaMethods, purrr, readr, rlang, stats, stringi, tibble, tidyr,
-        utils, vctrs, withr
+Imports: broom, crayon, dplyr, ggplot2, impute, lifecycle, magrittr,
+        missForest, pcaMethods, purrr, readr, rlang, stats, stringi,
+        tibble, tidyr, utils, vctrs, withr
 Depends: R (>= 3.5)
 LazyData: true
-Suggests: knitr, KODAMA, qsmooth, rmarkdown, stringr, testthat (>=
-        3.0.0)
+Suggests: knitr, qsmooth, rmarkdown, stringr, testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://github.com/yasche/metamorphr
+URL: https://github.com/yasche/metamorphr,
+        https://yasche.github.io/metamorphr/
 BugReports: https://github.com/yasche/metamorphr/issues
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2025-10-09 08:45:39 UTC; Administrator
+Packaged: 2026-03-04 13:11:11 UTC; Administrator
 Author: Yannik Schermer [aut, cre, cph] (ORCID:
     <https://orcid.org/0009-0002-5201-057X>)
 Maintainer: Yannik Schermer <yannik.schermer@chem.rptu.de>
 Repository: CRAN
-Date/Publication: 2025-10-09 09:20:02 UTC
+Date/Publication: 2026-03-04 13:30:02 UTC

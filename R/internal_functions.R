@@ -151,7 +151,7 @@ internal_mgf_to_data_metadata <- function(mgf_string) {
   data_index <- grep("^[0-9]", mgf_string)
   mgf_string_data <- mgf_string[data_index]
 
-  mgf_string_data <- stringi::stri_split_fixed(mgf_string_data, " ", 2, simplify = TRUE)
+  mgf_string_data <- stringi::stri_split_regex(mgf_string_data, " |\t", simplify = TRUE, omit_empty = TRUE)
 
   colnames(mgf_string_data) <- c("m_z", "Intensity")
 
@@ -190,6 +190,18 @@ internal_calc_neutral_loss <- function(prec_mz, msn) {
     }
   }
 }
+
+
+internal_msn_scale <- function(msn, scale_to) {
+  if (is.null(msn)) {
+    return(NULL)
+  } else {
+    max_int <- max(msn$Intensity)
+    msn %>%
+      dplyr::mutate(Intensity = .data$Intensity / .env$max_int * .env$scale_to)
+  }
+}
+
 
 internal_filter_msn_nl <- function(data, fragments, min_found, tolerance, tolerance_type, show_progress, msn_col) {
   if (tolerance_type == "ppm") {
