@@ -1,3 +1,12 @@
+# metamorphr 0.4.0
+
+## New features
+* New `read_featuretable_mzmine()` to read "full_feature_table" CSV files created with 'mzmine' into a tidy tibble
+* New `convert_from_wide()` to convert wide feature tables to tidy tibbles
+* New `convert_from_matrix()` to convert a matrix to a tidy tibble
+* New `remove_empty_cols()` to remove empty columns (i.e., columns that _only_ contain `NA`) from a tibble or data frame
+* `read_featuretable()` and `read_featuretable_mzmine()` now have a `remove_empty_cols` argument
+
 # metamorphr 0.3.0
 
 ## New features

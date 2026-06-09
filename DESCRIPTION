@@ -1,6 +1,6 @@
 Package: metamorphr
 Title: Tidy and Streamlined Metabolomics Data Workflows
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: 
     person("Yannik", "Schermer", , "yannik.schermer@chem.rptu.de", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0009-0002-5201-057X"))
@@ -20,9 +20,9 @@ URL: https://github.com/yasche/metamorphr,
 BugReports: https://github.com/yasche/metamorphr/issues
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2026-03-04 13:11:11 UTC; Administrator
+Packaged: 2026-06-09 09:43:10 UTC; Administrator
 Author: Yannik Schermer [aut, cre, cph] (ORCID:
     <https://orcid.org/0009-0002-5201-057X>)
 Maintainer: Yannik Schermer <yannik.schermer@chem.rptu.de>
 Repository: CRAN
-Date/Publication: 2026-03-04 13:30:02 UTC
+Date/Publication: 2026-06-09 10:40:02 UTC

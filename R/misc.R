@@ -272,7 +272,7 @@ calc_nominal_km <- function(mass, repeating_unit = "CH2") {
 #' @description
 #' The Kendrick mass defect (KMD) is calculated by subtracting the Kendrick mass
 #' (\code{\link[metamorphr]{calc_km}}) from the nominal Kendrick mass
-#' (\code{\link[metamorphr]{calc_nominal_km}}). The the References section for
+#' (\code{\link[metamorphr]{calc_nominal_km}}). See the References section for
 #' more information.
 #'
 #'
@@ -311,4 +311,57 @@ calc_nominal_km <- function(mass, repeating_unit = "CH2") {
 #'     ggplot2::geom_point()
 calc_kmd <- function(mass, repeating_unit = "CH2") {
   calc_nominal_km(mass, repeating_unit = repeating_unit) - calc_km(mass, repeating_unit = repeating_unit)
+}
+
+
+#' Remove empty columns from a tibble or data frame
+#'
+#' @description
+#' Remove empty columns (i.e., columns that _only_ contain `NA`) from a tibble or data frame.
+#'
+#' @param data A tibble or data frame in wide format.
+#' @param show_removed_cols If `TRUE` prints a message that shows which columns were removed.
+#' @param always_keep Specify columns that should *always* be kept, regardless if they only contain `NA` or not. Columns can be specified as a vector with column indices (e.g., c(1, 2)), column names as characters (e.g., c("a", "b")), as symbols (e.g., c(a, b)), or combinations thereof (e.g., c(1, b))
+#'
+#' @returns A tibble or data frame in wide format without empty columns.
+#' @export
+#'
+#' @examples
+#' # Columns `a` and `d` contains only `NA` and should be removed
+#' na_tibble <- tibble::tibble(
+#'   a = c(NA, NA, NA),
+#'   b = c(1, 2, 3),
+#'   c = c(NA, 2, 3),
+#'   d = c(NA, NA, 3),
+#'   e = c(NA, NA, NA)
+#' )
+#'
+#' remove_empty_cols(na_tibble)
+#'
+#' # Columns `a` and `d` contains only `NA` but `a` should be kept anyways
+#' remove_empty_cols(na_tibble, always_keep = a)
+remove_empty_cols <- function(data, always_keep = NULL, show_removed_cols = TRUE) {
+  col_order <- colnames(data)
+  empty_cols <- purrr::map(data, function(x) all(is.na(x)))
+  empty_cols <- unlist(empty_cols)
+  empty_cols <- empty_cols[empty_cols]
+  empty_col_names <- names(empty_cols)
+  data <- data %>%
+    dplyr::select(-dplyr::all_of(empty_col_names), {{ always_keep }}) %>%
+    dplyr::relocate(dplyr::any_of(col_order))
+
+  if (show_removed_cols == TRUE) {
+    removed_cols <- setdiff(col_order, colnames(data))
+    if(length(removed_cols) > 0) {
+      if (length(removed_cols) > 1) {
+        rlang::inform(paste0("The following columns were removed: ", paste(paste0("`", removed_cols, "`"), collapse = ", "), "."))
+      } else {
+        rlang::inform(paste0("The following column was removed: ", paste0("`", removed_cols, "`"), "."))
+      }
+    } else {
+      rlang::inform(paste0("No columns were removed."))
+    }
+  }
+
+  data
 }

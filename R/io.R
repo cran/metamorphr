@@ -5,8 +5,10 @@
 #'
 #' @param file A path to a file but can also be a connection or literal data.
 #' @param delim The field separator or delimiter. For example "," in csv files.
-#' @param label_col The index or name of the column that will be used to label Features. For example an identifier (_e.g._, KEGG, CAS, HMDB) or a _m/z_-RT pair.
+#' @param label_col The index or name (as a character) of the column that will be used to label Features. For example an identifier (_e.g._, KEGG, CAS, HMDB) or a _m/z_-RT pair.
 #' @param metadata_cols The index/indices or name(s) of column(s) that hold additional feature metadata (_e.g._, retention times, additional identifiers or _m/z_ values).
+#' @param remove_empty_cols Either `TRUE` or `FALSE`. Should empty columns be removed after reading the feature table? For a more fine-grained control, you can use a combination of \code{\link[readr]{read_delim}}, \code{\link[metamorphr]{remove_empty_cols}} and \code{\link[metamorphr]{convert_from_wide}}.See the respective function documentation for more details.
+#' @param show_removed_cols Only relevant if `remove_empty_cols = TRUE`. If `TRUE` prints a message that shows which columns were removed.
 #' @param ... Additional arguments passed on to `readr::read_delim()`
 #'
 #' @return A tidy tibble.
@@ -45,57 +47,129 @@
 #'
 #' featuretable
 #'
-read_featuretable <- function(file, delim = ",", label_col = 1, metadata_cols = NULL, ...) {
+read_featuretable <- function(file, delim = ",", label_col = 1, metadata_cols = NULL, remove_empty_cols = FALSE, show_removed_cols = TRUE, ...) {
   # perform some checks
-  if (length(label_col) > 1) {
-    rlang::abort("label_col must be of length 1.")
-  }
-
-
-  # if (!is.null(drop_cols)) {
-  #  if (label_col %in% drop_cols) {
-  #    rlang::abort("label_col can not be dropped.")
-  #  }
-  # }
-
 
   data <- readr::read_delim(file = file, delim = delim, show_col_types = FALSE, ...)
-  data_colnames <- colnames(data)
 
-  # functionality for when label_col is a character
-  if (is.character(label_col)) {
-    label_col <- which(data_colnames == label_col)
+  if (remove_empty_cols == TRUE) {
+    data <- remove_empty_cols(data, always_keep = dplyr::all_of(label_col), show_removed_cols = show_removed_cols)
   }
 
-  # functionality for when metadata_cols is a character
-  if (all(!(is.null(metadata_cols)), is.character(metadata_cols))) {
-    metadata_cols <- which(data_colnames %in% metadata_cols)
-  }
-
-  # 1: always UID
-  metadata_cols <- c(1, metadata_cols + 1, label_col + 1)
-
-  metadata_cols <- unique(metadata_cols)
-
-  # renamed Measurement -> Sample; label -> Feature
-  data <- data %>%
-    dplyr::rename("Feature" = dplyr::all_of(label_col)) %>%
-    # select(- {{ drop_cols }}) %>%
-    dplyr::mutate(Feature = as.character(.data$Feature)) %>%
-    dplyr::mutate(UID = seq(1, length(.data$Feature))) %>%
-    dplyr::relocate("UID", .before = 1) %>%
-    dplyr::relocate("Feature", .after = 1) %>%
-    # print()
-    tidyr::gather(-dplyr::all_of(metadata_cols), key = "Sample", value = "Intensity") %>%
-    dplyr::relocate("Sample", .after = 2) %>%
-    dplyr::relocate("Intensity", .after = 3) %>%
-    dplyr::mutate(Intensity = as.numeric(.data$Intensity)) %>%
-    # replace 0 with NA
-    dplyr::mutate(Intensity = dplyr::na_if(.data$Intensity, 0))
-
-  data
+  convert_from_wide(data, label_col = label_col, metadata_cols = metadata_cols)
 }
 
+#' Read a 'full_feature_table' from 'mzmine' into a tidy tibble
+#'
+#' @description
+#' Similar to \code{\link[metamorphr]{read_featuretable}} but specifically for full_feature_table' files created with 'mzmine'. For more information, see \href{https://mzmine.github.io/mzmine_documentation/module_docs/io/feat-list-export.html}{the 'mzmine' documentation}.
+#'
+#' @param file A path to a file but can also be a connection or literal data.
+#' @param intensity A character that specifies what should be used as the (semi-)quantitative measure. Either `"height"` or `"area"`.
+#' @param field_separator The field separator as specified in 'mzmine'. Usually `","` if the file is in common CSV format.
+#' @param label_col The index or name (as a character) of the column that will be used to label Features. For example an identifier (_e.g._, KEGG, CAS, HMDB) or a _m/z_-RT pair.
+#' @param import_datafile_cols Should columns that begin with `datafile:` be imported? Those columns contain sample-specific information, for example the retention time of a feature measured in a specific sample. Usually, this information is not necessary for downstream analysis but it can be used for quality control purposes. If `TRUE`, `datafile:` columns are imported and the sample names are removed from the column names. This allows for tidy storage of the information in one column per variable.
+#' @param remove_empty_cols Either `TRUE` or `FALSE`. Should empty columns be removed after reading the feature table? For a more fine-grained control, you can use a combination of \code{\link[readr]{read_delim}}, \code{\link[metamorphr]{remove_empty_cols}} and \code{\link[metamorphr]{convert_from_wide}}.See the respective function documentation for more details.
+#' @param show_removed_cols Only relevant if `remove_empty_cols = TRUE`. If `TRUE` prints a message that shows which columns were removed.
+#'
+#' @return A tidy tibble.
+#' @export
+#'
+#' @references \itemize{
+#'  \item H. Wickham, \emph{J. Stat. Soft.} \strong{2014}, \emph{59}, DOI 10.18637/jss.v059.i10.
+#'  \item H. Wickham, M. Averick, J. Bryan, W. Chang, L. McGowan, R. François, G. Grolemund, A. Hayes, L. Henry, J. Hester, M. Kuhn, T. Pedersen, E. Miller, S. Bache, K. Müller, J. Ooms, D. Robinson, D. Seidel, V. Spinu, K. Takahashi, D. Vaughan, C. Wilke, K. Woo, H. Yutani, \emph{JOSS} \strong{2019}, \emph{4}, 1686, DOI 10.21105/joss.01686.
+#'  \item “12 Tidy data | R for Data Science,” can be found under \url{https://r4ds.had.co.nz/tidy-data.html}, \strong{2023}.
+#' }
+#'
+#' @examples
+#' # Read a toy dataset in the format produced with mzmine.
+#'
+#' featuretable_path <- system.file("extdata", "toy_mzmine.csv", package = "metamorphr")
+#'
+#' # Example 1: Use feature height as the metric
+#' featuretable <- read_featuretable_mzmine(
+#'   featuretable_path,
+#'   intensity = "height"
+#' )
+#'
+#' featuretable
+#'
+#' # Example 2: Use the 'mz' column as a Feature label
+#' featuretable <- read_featuretable_mzmine(
+#'   featuretable_path,
+#'   label_col = "mz"
+#' )
+#'
+#' featuretable
+read_featuretable_mzmine <- function(file, intensity = "height", field_separator = ",", label_col = 1, import_datafile_cols = FALSE, remove_empty_cols = FALSE, show_removed_cols = TRUE) {
+  data <- readr::read_delim(file, delim = field_separator, show_col_types = FALSE)
+
+  if (remove_empty_cols == TRUE) {
+    data <- remove_empty_cols(data, always_keep = dplyr::all_of(label_col), show_removed_cols = show_removed_cols)
+  }
+
+  file_colnames <- colnames(data)
+
+  if (!(intensity %in% c("height", "area"))) {
+    rlang::abort(paste0('Argument `intensity` must be "height" or "area", not "', intensity, '".'))
+  }
+
+  #check for duplicate names
+
+  datafile_cols <- stringi::stri_detect_regex(file_colnames, pattern = "^datafile:")
+
+  metadata_colnames <- file_colnames[!datafile_cols]
+
+
+  intensity_cols <- stringi::stri_detect_regex(file_colnames, pattern = paste0("^datafile:.{1,}", intensity, "$"))
+
+  datafile_cols[intensity_cols] <- FALSE
+
+
+  datafile_colnames <- file_colnames[datafile_cols]
+  intensity_colnames <- file_colnames[intensity_cols]
+
+
+
+  if (is.character(label_col)) {
+    clone_id <- label_col == "id"
+  } else {
+    clone_id <- colnames(data)[[label_col]] == "id"
+  }
+
+
+  if(import_datafile_cols == FALSE) {
+    data <- dplyr::select(data, -dplyr::all_of(datafile_colnames))
+    data <- convert_from_wide(data, label_col = label_col, metadata_cols = metadata_colnames) %>%
+      dplyr::mutate(Sample = stringi::stri_replace_all_regex(.data$Sample, "^datafile:", "")) %>%
+      dplyr::mutate(Sample = stringi::stri_replace_all_regex(.data$Sample, paste0(":", intensity, "$"), ""))
+    return(data)
+  } else {
+    sample_names_cleaned <- stringi::stri_replace_all_regex(datafile_colnames, "^datafile:", "")
+    sample_names_cleaned <- unique(stringi::stri_replace_all_regex(sample_names_cleaned, ":.{1,}$", ""))
+
+    datafile_cols_list <- purrr::map(sample_names_cleaned, function(x, y) {dplyr::select(y, c("id", dplyr::contains(x)))}, y = data)
+
+    datafile_cols_list <- purrr::map(datafile_cols_list, internal_rename_datafile_cols)
+
+    names(datafile_cols_list) <- sample_names_cleaned
+
+    datafile_cols_df <- dplyr::bind_rows(datafile_cols_list, .id = "Sample")
+
+    data <- dplyr::select(data, -dplyr::all_of(datafile_colnames))
+
+    data <- convert_from_wide(data, label_col = label_col, metadata_cols = metadata_colnames)
+
+    if (clone_id == TRUE) {
+      data <- dplyr::mutate(data, id = as.numeric(.data$Feature))
+    }
+
+    data %>%
+      dplyr::mutate(Sample = stringi::stri_replace_all_regex(.data$Sample, "^datafile:", "")) %>%
+      dplyr::mutate(Sample = stringi::stri_replace_all_regex(.data$Sample, paste0(":", intensity, "$"), "")) %>%
+      dplyr::left_join(datafile_cols_df, by = dplyr::join_by("Sample", "id"))
+  }
+}
 
 #' Create a blank metadata skeleton
 #'
