@@ -1,3 +1,8 @@
+# metamorphr 0.4.1
+
+## Fixes
+* Fixed critical bug in `read_featuretable` where empty metadata columns caused issues if `metadata_col`s were supplied as numerics.
+
 # metamorphr 0.4.0
 
 ## New features
